@@ -5,8 +5,7 @@ import akka.actor.Actor
 import scala.io.Source
 
 class YoulessPollActor extends Actor {
-
-  def receive: PartialFunction[Any, Unit] = {
+  override def receive: PartialFunction[Any, Unit] = {
     case _ =>
       // convert to seconds
       val timestamp = System.currentTimeMillis() / 1000
@@ -15,11 +14,11 @@ class YoulessPollActor extends Actor {
       val message = YoulessMessage.parseMessage(json.mkString)
 
       val graphite = new GraphiteClient()
-      graphite.send("test.kwh_total", message.cnt.toString, timestamp)
-      graphite.send("test.kwh_current", message.cnt.toString, timestamp)
+      graphite.send("youless.kwh_total", message.cnt.toString, timestamp)
+      graphite.send("youless.kwh_current", message.cnt.toString, timestamp)
       graphite.close()
 
+      // For debugging
       println(message)
   }
-
 }
