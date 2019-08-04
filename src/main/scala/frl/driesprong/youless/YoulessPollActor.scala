@@ -15,7 +15,7 @@ class YoulessPollActor extends Actor {
 
       val graphite = new GraphiteClient()
       graphite.send("youless.kwh_total", message.cnt.toString, timestamp)
-      graphite.send("youless.kwh_current", message.cnt.toString, timestamp)
+      graphite.send("youless.watt_current", message.pwr.toString, timestamp)
       graphite.close()
 
       // For debugging
