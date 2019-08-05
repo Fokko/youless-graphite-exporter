@@ -17,25 +17,44 @@
 
 package frl.driesprong.youless
 
-import org.json4s.JsonAST.{JDouble, JString}
-import org.json4s.{CustomSerializer, DefaultFormats, Formats}
 import org.json4s.jackson.JsonMethods.parse
+import org.json4s.{DefaultFormats, Formats}
 
-case class YoulessMessage(cnt: Double, pwr: Int) {
-  override def toString: String = s"sCurrent consumption ${pwr}, total ${cnt}"
+/*
+[{
+	"tm": 1565032557,
+	"net": 15.778,
+	"pwr": 312,
+	"ts0": 1564663800,
+	"cs0": 0.000,
+	"ps0": 0,
+	"p1": 26.323,
+	"p2": 6.907,
+	"n1": 9.651,
+	"n2": 7.801,
+	"gas": 818.527,
+	"gts": 1908052115
+}]
+ */
+
+case class YoulessMessage(tm: Long, net: Double, pwr: Int, p1: Double, p2: Double, n1: Double, n2: Double, gas: Double) {
+  override def toString: String =
+    s"""Message:
+       |  Time: ${tm}
+       |  Total: ${net} kWh
+       |  Currently: ${pwr} Watt
+       |  Production low tariff: ${p1} kWh
+       |  Production high tariff: ${p2} kWh
+       |  Consumption low tariff: ${n1} kWh
+       |  Consumption high tariff: ${n2} kWh
+       |  Gas: ${gas} m3
+       |""".stripMargin
 }
 
 object YoulessMessage {
-  object StringToDouble extends CustomSerializer[Double](format => ( {
-    // In the EU we use a comma instead of a dot
-    case JString(x) => x.replace(',', '.').toDouble
-  }, {
-    case x: Double => JDouble(x)
-  }))
-
-  implicit val formats: Formats = DefaultFormats + StringToDouble
+  implicit val formats: Formats = DefaultFormats
 
   def parseMessage(json: String): YoulessMessage =
-    parse(json.mkString).extract[YoulessMessage]
+    parse(json.mkString).extract[List[YoulessMessage]].head
 }
 

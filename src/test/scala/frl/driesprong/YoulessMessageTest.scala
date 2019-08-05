@@ -24,12 +24,35 @@ import org.scalatest._
 class YoulessMessageTest extends FlatSpec with Matchers {
 
   "A json representation of the message" should "be parsed" in {
-    val json = """{"cnt":" 17,951","pwr":138,"lvl":0,"dev":"","det":"","con":"","sts":"","cs0":" 0,000","ps0":0,"raw":0}"""
+    val json =
+      """[
+        |  {
+        |    "tm": 1565032601,
+        |    "net": 15.782,
+        |    "pwr": 310,
+        |    "ts0": 1564663800,
+        |    "cs0": 0,
+        |    "ps0": 0,
+        |    "p1": 26.323,
+        |    "p2": 6.911,
+        |    "n1": 9.651,
+        |    "n2": 7.801,
+        |    "gas": 818.527,
+        |    "gts": 1908052115
+        |  }
+        |]
+        |""".stripMargin
 
     val message = YoulessMessage.parseMessage(json)
 
-    message.cnt should be(17.951)
-    message.pwr should be(138)
+    message.tm should be(1565032601)
+    message.net should be(15.782)
+    message.pwr should be(310)
+    message.p1 should be(26.323)
+    message.p2 should be(6.911)
+    message.n1 should be(9.651)
+    message.n2 should be(7.801)
+    message.gas should be(818.527)
   }
 
   it should "throw an exception if we can't parse the data" in {

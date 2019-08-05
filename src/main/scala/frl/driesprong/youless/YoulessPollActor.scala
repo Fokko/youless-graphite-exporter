@@ -25,17 +25,17 @@ class YoulessPollActor extends Actor {
   override def receive: PartialFunction[Any, Unit] = {
     case _ =>
       // convert to seconds
-      val timestamp = System.currentTimeMillis() / 1000
-
-      val json = Source.fromURL(s"http://${Config.youless}/a?f=j")
+      val json = Source.fromURL(s"http://${Config.youless}/e?f=j")
       val message = YoulessMessage.parseMessage(json.mkString)
 
       val graphite = new GraphiteClient()
-      graphite.send("youless.kwh_total", message.cnt.toString, timestamp)
-      graphite.send("youless.watt_current", message.pwr.toString, timestamp)
+      graphite.send("youless.kwh_total", message.net.toString, message.tm)
+      graphite.send("youless.watt_current", message.pwr.toString, message.tm)
+      graphite.send("youless.kwh_production_low_tariff", message.p1.toString, message.tm)
+      graphite.send("youless.kwh_production_high_tariff", message.p2.toString, message.tm)
+      graphite.send("youless.kwh_consumption_low_tariff", message.n1.toString, message.tm)
+      graphite.send("youless.kwh_consumption_high_tariff", message.n2.toString, message.tm)
+      graphite.send("youless.m3_gas", message.gas.toString, message.tm)
       graphite.close()
-
-      // For debugging
-      println(message)
   }
 }
