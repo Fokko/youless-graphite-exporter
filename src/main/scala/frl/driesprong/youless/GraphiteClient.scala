@@ -21,7 +21,7 @@ import java.io._
 
 import javax.net.SocketFactory
 
-class GraphiteClient(address: String = Config.statsd, port: Int = 2003) extends Closeable {
+class GraphiteClient(address: String = Config.graphite, port: Int = 2003) extends Closeable {
 
   private lazy val socket = {
     val s = SocketFactory.getDefault.createSocket(address, port)

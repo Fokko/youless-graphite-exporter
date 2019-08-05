@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-name := "youless-statsd-exporter"
+name := "youless-graphite-exporter"
 
 version := "0.1"
 

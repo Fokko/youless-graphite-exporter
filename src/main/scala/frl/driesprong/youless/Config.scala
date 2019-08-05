@@ -22,6 +22,6 @@ import com.typesafe.config.ConfigFactory
 object Config {
   private val conf = ConfigFactory.load();
 
-  val statsd: String = conf.getString("statsd");
+  val graphite: String = conf.getString("graphite");
   val youless: String = conf.getString("youless");
 }
