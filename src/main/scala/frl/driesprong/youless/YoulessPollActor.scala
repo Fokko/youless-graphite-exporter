@@ -17,13 +17,16 @@
 
 package frl.driesprong.youless
 
+import java.net.NoRouteToHostException
+
 import akka.actor.Actor
+import com.fasterxml.jackson.core.JsonParseException
 
 import scala.io.Source
 
 class YoulessPollActor extends Actor {
   override def receive: PartialFunction[Any, Unit] = {
-    case _ =>
+    case _ => try {
       // convert to seconds
       val json = Source.fromURL(s"http://${Config.youless}/e?f=j")
       val message = YoulessMessage.parseMessage(json.mkString)
@@ -37,5 +40,10 @@ class YoulessPollActor extends Actor {
       graphite.send("youless.kwh_production_high_tariff", message.n2.toString, message.tm)
       graphite.send("youless.m3_gas", message.gas.toString, message.tm)
       graphite.close()
+    } catch {
+      case e: NoRouteToHostException => println("Could not connect: " + e)
+      case e: JsonParseException => println("Could not parse the payload: " + e)
+      case e: Throwable => println("Unknown exception: " + e)
+    }
   }
 }
