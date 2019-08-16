@@ -19,6 +19,7 @@ package frl.driesprong.youless
 
 import java.net.NoRouteToHostException
 
+import akka.actor.Cancellable
 import com.fasterxml.jackson.core.JsonParseException
 import com.typesafe.scalalogging.LazyLogging
 
@@ -31,27 +32,25 @@ object YoulessPoller extends LazyLogging {
     implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
     val system = akka.actor.ActorSystem("system")
 
-    val poll: Unit = new Runnable() {
-      override def run(): Unit = try {
-        logger.info("Poll data from Youless")
-        // convert to seconds
-        val json = Source.fromURL(s"http://${Config.youless}/e?f=j")
-        val message = YoulessMessage.parseMessage(json.mkString)
+    val poll: Unit = try {
+      logger.info("Poll data from Youless")
+      // convert to seconds
+      val json = Source.fromURL(s"http://${Config.youless}/e?f=j")
+      val message = YoulessMessage.parseMessage(json.mkString)
 
-        val graphite = new GraphiteClient()
-        graphite.send("youless.kwh_total", message.net.toString, message.tm)
-        graphite.send("youless.watt_current", message.pwr.toString, message.tm)
-        graphite.send("youless.kwh_consumption_low_tariff", message.p1.toString, message.tm)
-        graphite.send("youless.kwh_consumption_high_tariff", message.p2.toString, message.tm)
-        graphite.send("youless.kwh_production_low_tariff", message.n1.toString, message.tm)
-        graphite.send("youless.kwh_production_high_tariff", message.n2.toString, message.tm)
-        graphite.send("youless.m3_gas", message.gas.toString, message.tm)
-        graphite.close()
-      } catch {
-        case e: NoRouteToHostException => println("Could not connect: " + e)
-        case e: JsonParseException => println("Could not parse the payload: " + e)
-        case e: Throwable => println("Unknown exception: " + e)
-      }
+      val graphite = new GraphiteClient()
+      graphite.send("youless.kwh_total", message.net.toString, message.tm)
+      graphite.send("youless.watt_current", message.pwr.toString, message.tm)
+      graphite.send("youless.kwh_consumption_low_tariff", message.p1.toString, message.tm)
+      graphite.send("youless.kwh_consumption_high_tariff", message.p2.toString, message.tm)
+      graphite.send("youless.kwh_production_low_tariff", message.n1.toString, message.tm)
+      graphite.send("youless.kwh_production_high_tariff", message.n2.toString, message.tm)
+      graphite.send("youless.m3_gas", message.gas.toString, message.tm)
+      graphite.close()
+    } catch {
+      case e: NoRouteToHostException => println("Could not connect: " + e)
+      case e: JsonParseException => println("Could not parse the payload: " + e)
+      case e: Throwable => println("Unknown exception: " + e)
     }
 
     system.scheduler.schedule(0 seconds, 1 seconds)(poll)

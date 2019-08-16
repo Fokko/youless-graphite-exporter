@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
   "org.json4s" %% "json4s-jackson" % "3.6.7",
   "com.typesafe" % "config" % "1.3.4",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+  "org.slf4j" % "slf4j-simple" % "1.7.28",
 
   "org.scalatest" %% "scalatest" % "3.0.8" % Test
 )
