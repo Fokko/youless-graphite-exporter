@@ -25,6 +25,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.5.23",
   "org.json4s" %% "json4s-jackson" % "3.6.7",
   "com.typesafe" % "config" % "1.3.4",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
 
   "org.scalatest" %% "scalatest" % "3.0.8" % Test
 )
