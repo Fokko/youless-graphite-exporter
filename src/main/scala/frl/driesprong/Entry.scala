@@ -17,18 +17,42 @@
 
 package frl.driesprong
 
-import akka.actor.Props
-import frl.driesprong.youless.YoulessPollActor
+import java.net.NoRouteToHostException
+
+import com.fasterxml.jackson.core.JsonParseException
+import frl.driesprong.youless.{Config, GraphiteClient, YoulessMessage}
 
 import scala.concurrent.duration._
+import scala.io.Source
 import scala.language.postfixOps
 
 object Entry extends App {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
   val system = akka.actor.ActorSystem("system")
 
-  val tickActor = system.actorOf(Props(classOf[YoulessPollActor]))
-  val cancellable = system.scheduler.schedule(0 seconds, 1 seconds, tickActor, None)
+  val poll: Unit = new Runnable() {
+    override def run(): Unit = try {
+      // convert to seconds
+      val json = Source.fromURL(s"http://${Config.youless}/e?f=j")
+      val message = YoulessMessage.parseMessage(json.mkString)
+
+      val graphite = new GraphiteClient()
+      graphite.send("youless.kwh_total", message.net.toString, message.tm)
+      graphite.send("youless.watt_current", message.pwr.toString, message.tm)
+      graphite.send("youless.kwh_consumption_low_tariff", message.p1.toString, message.tm)
+      graphite.send("youless.kwh_consumption_high_tariff", message.p2.toString, message.tm)
+      graphite.send("youless.kwh_production_low_tariff", message.n1.toString, message.tm)
+      graphite.send("youless.kwh_production_high_tariff", message.n2.toString, message.tm)
+      graphite.send("youless.m3_gas", message.gas.toString, message.tm)
+      graphite.close()
+    } catch {
+      case e: NoRouteToHostException => println("Could not connect: " + e)
+      case e: JsonParseException => println("Could not parse the payload: " + e)
+      case e: Throwable => println("Unknown exception: " + e)
+    }
+  }
+
+  val cancellable = system.scheduler.schedule(0 seconds, 1 seconds)(poll)
 
   System.out.println("Polling...")
 }
