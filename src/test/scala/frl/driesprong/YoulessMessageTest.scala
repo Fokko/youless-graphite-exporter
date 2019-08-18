@@ -18,7 +18,7 @@
 package frl.driesprong;
 
 import com.fasterxml.jackson.core.JsonParseException
-import frl.driesprong.youless.YoulessMessage
+import frl.driesprong.messages.YoulessMessage
 import org.scalatest._
 
 class YoulessMessageTest extends FlatSpec with Matchers {

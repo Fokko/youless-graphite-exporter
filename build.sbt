@@ -19,12 +19,14 @@ name := "youless-graphite-exporter"
 
 version := "0.1"
 
-scalaVersion := "2.13.0"
+scalaVersion := "2.12.8"
 
 libraryDependencies ++= Seq(
+  "com.typesafe" % "config" % "1.3.4",
   "com.typesafe.akka" %% "akka-actor" % "2.5.23",
   "org.json4s" %% "json4s-jackson" % "3.6.7",
-  "com.typesafe" % "config" % "1.3.4",
+  "com.paulgoldbaum" %% "scala-influxdb-client" % "0.6.1",
+
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "org.slf4j" % "slf4j-simple" % "1.7.28",
 

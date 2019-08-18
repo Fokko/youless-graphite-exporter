@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package frl.driesprong.youless
+package frl.driesprong.messages
 
 import org.json4s.jackson.JsonMethods.parse
 import org.json4s.{DefaultFormats, Formats}

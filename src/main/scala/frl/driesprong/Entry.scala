@@ -17,8 +17,17 @@
 
 package frl.driesprong
 
-import frl.driesprong.youless.YoulessPoller
+import akka.actor.{ActorRef, Props}
+import frl.driesprong.actors.{InfluxPushActor, YoulessPollActor}
+
+import scala.concurrent.duration._
 
 object Entry extends App {
-  YoulessPoller.run()
+  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+  val system = akka.actor.ActorSystem("system")
+
+  val youlessActor: ActorRef = system.actorOf(Props(classOf[YoulessPollActor]))
+  val influxActor: ActorRef = system.actorOf(Props(classOf[InfluxPushActor]))
+
+  system.scheduler.schedule(0 seconds, 1 seconds, youlessActor: ActorRef, "vo")
 }
