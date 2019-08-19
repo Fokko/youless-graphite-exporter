@@ -23,7 +23,7 @@ scalaVersion := "2.12.8"
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.4",
-  "com.typesafe.akka" %% "akka-actor" % "2.5.23",
+  "com.typesafe.akka" %% "akka-actor" % "2.5.24",
   "org.json4s" %% "json4s-jackson" % "3.6.7",
   "com.paulgoldbaum" %% "scala-influxdb-client" % "0.6.1",
 
