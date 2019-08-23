@@ -9,6 +9,10 @@ import frl.driesprong.{Config, Entry}
 
 import scala.io.Source
 
+object YoulessPollActor {
+  var lastSeenTimestamp: Long = System.currentTimeMillis / 1000
+}
+
 class YoulessPollActor extends Actor with ActorLogging {
   override def receive: Receive = {
     case _ => try {
@@ -18,8 +22,12 @@ class YoulessPollActor extends Actor with ActorLogging {
 
       log.info("Got: " + jsonPayload)
 
+      val message = YoulessMessage.parseMessage(jsonPayload)
+
+      YoulessPollActor.lastSeenTimestamp = message.tm
+
       // Send the parsed message to the sink
-      Entry.influxActor ! YoulessMessage.parseMessage(jsonPayload)
+      Entry.influxActor ! message
     } catch {
       case e: NoRouteToHostException => log.warning("Could not connect: " + e)
       case e: JsonParseException => log.warning("Could not parse the payload: " + e)

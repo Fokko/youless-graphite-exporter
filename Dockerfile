@@ -19,4 +19,7 @@ WORKDIR /app/
 
 RUN sbt compile
 
+HEALTHCHECK --interval=22s --timeout=22s \
+  CMD curl -f http://localhost:8000/ || exit 1
+
 CMD sbt run

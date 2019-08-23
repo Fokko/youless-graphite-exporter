@@ -30,4 +30,6 @@ object Entry extends App {
   val influxActor: ActorRef = system.actorOf(Props(classOf[InfluxPushActor]))
 
   system.scheduler.schedule(0 seconds, 1 seconds, youlessActor: ActorRef, "vo")
+
+  HealthProbe.start()
 }
