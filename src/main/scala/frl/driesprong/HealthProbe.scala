@@ -34,7 +34,7 @@ class HealthProbe extends HttpHandler {
 
     println(s"Last message $lag seconds ago")
 
-    val responseCode = if (lag > MaxLagInSeconds) {
+    val responseCode = if (lag <= MaxLagInSeconds) {
       200 // Everything looks good
     } else {
       500 // Oops, something is off :'(
