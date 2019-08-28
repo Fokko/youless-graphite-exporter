@@ -22,7 +22,7 @@ object HealthProbe {
 
 class HealthProbe extends HttpHandler {
 
-  val MaxLagInSeconds: Int = 22;
+  val MaxLagInSeconds: Int = 22
 
   def handle(t: HttpExchange) {
     sendResponse(t)
@@ -30,11 +30,11 @@ class HealthProbe extends HttpHandler {
 
   private def sendResponse(t: HttpExchange) {
     val response = "Ack!"
-    val lag = YoulessPollActor.lastSeenTimestamp > (System.currentTimeMillis / 1000)
+    val lag = (System.currentTimeMillis / 1000) - YoulessPollActor.lastSeenTimestamp
 
     println(s"Last message $lag seconds ago")
 
-    val responseCode = if (lag - MaxLagInSeconds) {
+    val responseCode = if (lag > MaxLagInSeconds) {
       200 // Everything looks good
     } else {
       500 // Oops, something is off :'(
