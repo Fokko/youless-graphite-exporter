@@ -19,7 +19,7 @@ name := "youless-graphite-exporter"
 
 version := "0.1"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.9"
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.4",
