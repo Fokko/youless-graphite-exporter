@@ -17,19 +17,47 @@
 
 package frl.driesprong
 
-import akka.actor.{ActorRef, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.{HttpEntity, ContentTypes, HttpResponse}
+import akka.http.scaladsl.server.Directives.{path, get, complete}
 import frl.driesprong.actors.{InfluxPushActor, YoulessPollActor}
+import akka.stream.ActorMaterializer
+import akka.http.scaladsl.model.StatusCodes.InternalServerError
 
 import scala.concurrent.duration._
+import scala.io.StdIn
 
 object Entry extends App {
-  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
-  val system = akka.actor.ActorSystem("system")
+  private val MaxLagInSeconds: Int = 22
+
+  private implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+  private implicit val system: ActorSystem = akka.actor.ActorSystem("system")
+  private implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   val youlessActor: ActorRef = system.actorOf(Props(classOf[YoulessPollActor]))
   val influxActor: ActorRef = system.actorOf(Props(classOf[InfluxPushActor]))
 
   system.scheduler.schedule(0 seconds, 1 seconds, youlessActor: ActorRef, "vo")
 
-  HealthProbe.start()
+  val route =
+    get {
+      val lag = (System.currentTimeMillis / 1000) - YoulessPollActor.lastSeenTimestamp
+      val msg = s"Last message $lag seconds ago"
+      println(msg)
+
+      if (lag <= MaxLagInSeconds) {
+        complete(HttpEntity(ContentTypes.`text/plain(UTF-8)`, msg))
+      } else {
+        complete(HttpResponse(InternalServerError, entity = msg))
+      }
+    }
+
+  val bindingFuture = Http().bindAndHandle(route, "0.0.0.0", 8000)
+
+  println(s"Press RETURN to stop...")
+  StdIn.readLine() // let it run until user presses return
+  bindingFuture
+    .flatMap(_.unbind()) // trigger unbinding from the port
+    .onComplete(_ => system.terminate()) // and shutdown when done
 }
