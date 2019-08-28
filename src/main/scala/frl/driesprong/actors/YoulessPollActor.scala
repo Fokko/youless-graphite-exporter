@@ -10,7 +10,7 @@ import frl.driesprong.{Config, Entry}
 import scala.io.Source
 
 object YoulessPollActor {
-  var lastSeenTimestamp: Long = System.currentTimeMillis / 1000
+  @volatile var lastSeenTimestamp: Long = System.currentTimeMillis / 1000
 }
 
 class YoulessPollActor extends Actor with ActorLogging {
