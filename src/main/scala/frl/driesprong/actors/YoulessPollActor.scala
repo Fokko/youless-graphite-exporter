@@ -20,7 +20,7 @@ class YoulessPollActor extends Actor with ActorLogging {
       val json = Source.fromURL(s"http://${Config.youless}/e?f=j")
       val jsonPayload = json.mkString
 
-      log.info("Got: " + jsonPayload)
+      log.debug("Got: " + jsonPayload)
 
       val message = YoulessMessage.parseMessage(jsonPayload)
 

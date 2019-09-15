@@ -23,8 +23,8 @@ scalaVersion := "2.12.9"
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.4",
-  "com.typesafe.akka" %% "akka-actor" % "2.5.24",
-  "com.typesafe.akka" %% "akka-stream" % "2.5.23",
+  "com.typesafe.akka" %% "akka-actor" % "2.5.25",
+  "com.typesafe.akka" %% "akka-stream" % "2.5.25",
   "com.typesafe.akka" %% "akka-http" % "10.1.9",
 
   "org.json4s" %% "json4s-jackson" % "3.6.7",
