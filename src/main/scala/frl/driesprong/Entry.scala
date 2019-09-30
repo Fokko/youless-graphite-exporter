@@ -19,11 +19,11 @@ package frl.driesprong
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpEntity, ContentTypes, HttpResponse}
-import akka.http.scaladsl.server.Directives.{path, get, complete}
-import frl.driesprong.actors.{InfluxPushActor, YoulessPollActor}
-import akka.stream.ActorMaterializer
 import akka.http.scaladsl.model.StatusCodes.InternalServerError
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse}
+import akka.http.scaladsl.server.Directives.{complete, get}
+import akka.stream.ActorMaterializer
+import frl.driesprong.actors.{InfluxPushActor, YoulessPollActor}
 
 import scala.concurrent.duration._
 import scala.io.StdIn
@@ -38,7 +38,7 @@ object Entry extends App {
   val youlessActor: ActorRef = system.actorOf(Props(classOf[YoulessPollActor]))
   val influxActor: ActorRef = system.actorOf(Props(classOf[InfluxPushActor]))
 
-  system.scheduler.schedule(0 seconds, 1 seconds, youlessActor: ActorRef, "vo")
+  system.scheduler.schedule(Duration.Zero, 1 seconds, youlessActor: ActorRef, "vo")
 
   val route =
     get {

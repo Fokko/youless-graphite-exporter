@@ -39,14 +39,9 @@ import org.json4s.{DefaultFormats, Formats}
 
 case class YoulessMessage(tm: Long, net: Double, pwr: Int, p1: Double, p2: Double, n1: Double, n2: Double, gas: Double) {
   override def toString: String =
-    s"""Message:
-       |  Time: ${tm}
+    s"""Message ${tm}:
        |  Total: ${net} kWh
        |  Currently: ${pwr} Watt
-       |  Production low tariff: ${p1} kWh
-       |  Production high tariff: ${p2} kWh
-       |  Consumption low tariff: ${n1} kWh
-       |  Consumption high tariff: ${n2} kWh
        |  Gas: ${gas} m3
        |""".stripMargin
 }

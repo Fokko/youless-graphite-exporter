@@ -12,20 +12,6 @@ class InfluxPushActor extends Actor with ActorLogging {
   private lazy val influxdb: InfluxDB = InfluxDB.connect(Config.influxHost, 8086)
   private lazy val database = influxdb.selectDatabase(Config.influxDatabase)
 
-  /*
-      s"""Message:
-       |  Time: ${tm}
-       |  Total: ${net} kWh
-       |  Currently: ${pwr} Watt
-       |  Production low tariff: ${p1} kWh
-       |  Production high tariff: ${p2} kWh
-       |  Consumption low tariff: ${n1} kWh
-       |  Consumption high tariff: ${n2} kWh
-       |  Gas: ${gas} m3
-       |""".stripMargin
-}
-   */
-
   override def receive: Receive = {
     case message: YoulessMessage =>
       val point = Point("youless", message.tm * 1000L * 1000L * 1000L)
